@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Asteroids</title>
+	<link rel="shortcut icon" href="favicon.png" />
+	<link href='http://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css' />
+	<link rel="stylesheet" type="text/css" href="main.css" />
+	<script>
+		"use strict";
+	</script>
+	<script src="src/phaser.min.js"></script>
+	<script src="src/GS_Boot.js"></script>
+	<script src="src/GS_Preload.js"></script>
+	<script src="src/GS_TitleScreen.js"></script>
+	<script src="src/GS_InGame.js"></script>
+	<script src="src/GS_EndGame.js"></script>
+</head>
+<body>
+	<header>
+		<h1 class="text-center">Asteroids</h1>
+	</header>
+
+	<div id="game_div"></div>
+
+	<script>
+		var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game_div');
+		game.state.add('Boot', Asteroids.Boot);
+		game.state.add('Preloader', Asteroids.Preloader);
+		game.state.add('TitleScreen', Asteroids.TitleScreen);
+		game.state.add('InGame', Asteroids.InGame);
+		game.state.add('EndGame', Asteroids.EndGame);
+		game.state.start('Boot');
+	</script>
+</body>
+</html>
