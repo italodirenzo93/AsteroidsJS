@@ -108,11 +108,22 @@ Asteroids.InGame.prototype.update = function () {
 };
 
 Asteroids.InGame.prototype.spawnAsteroids = function () {
+	var ship = this.ship;
+	var xExtent = ship.width + 20;
+	var yExtent = ship.height + 20;
+
 	while(this.asteroidGroup.countDead() !== 0) {
 		var asteroid = this.asteroidGroup.getFirstDead();
 		asteroid.body.setSize(30, 30);
-		var x = Math.floor(Math.random() * 750) + 10;
-		var y = Math.floor(Math.random() * 550) + 10;
+
+		// Find a location to spawn that isn't directly on top of the player
+		var x, y;
+		do {
+			x = Math.floor(Math.random() * 750) + 10;
+			y = Math.floor(Math.random() * 550) + 10;
+		}
+		while (Math.abs(ship.centerX - x) < xExtent || Math.abs(ship.centerY - y) < yExtent);
+
 		asteroid.reset(x, y);
 	}
 };
