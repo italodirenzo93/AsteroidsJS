@@ -1,0 +1,22 @@
+{
+  "name": "asteroids-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/italodirenzo93/AsteroidsJS.git"
+  },
+  "author": "Italo Di Renzo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/italodirenzo93/AsteroidsJS/issues"
+  },
+  "homepage": "https://github.com/italodirenzo93/AsteroidsJS#readme",
+  "devDependencies": {
+    "http-server": "^0.10.0"
+  }
+}
