@@ -1,15 +1,29 @@
 body {
 	background-color: black;
 	color: white;
-	font-family: Verdana;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
-div#game_div canvas {
+a {
+	color: #07C;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#game_div canvas {
 	display: block;
 	margin: auto;
 	border: 1px solid white;
 }
 
-.text-center {
+.header-text {
 	text-align: center;
+}
+
+.footer-text {
+	text-align: center;
+	font-size: 10pt;
 }

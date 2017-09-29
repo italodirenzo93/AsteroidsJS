@@ -22,12 +22,14 @@ Asteroids.InGame.prototype.create = function () {
 	// Insert and initialize assets
 	this.bg = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
 
+	// create ship
 	this.ship = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'ship', 0);
 	this.ship.anchor.setTo(0.5, 0.5);
 	this.game.physics.arcade.enable(this.ship);
 	this.ship.animations.add('fly', [0, 1], 10, true);
 	this.ship.animations.play('fly');
 	
+	// create laser group
 	this.lasers = this.game.add.group();
 	this.lasers.enableBody = true;
 	this.lasers.physicsBodyType = Phaser.Physics.ARCADE;
@@ -37,6 +39,7 @@ Asteroids.InGame.prototype.create = function () {
 
 	this.sfx_laser1 = this.add.audio('sfx_laser1', 0.5);
 
+	// create asteroid group
 	this.asteroidGroup = this.add.group();
 	this.asteroidGroup.enableBody = true;
 	this.asteroidGroup.physicsBodyType = Phaser.Physics.ARCADE;
@@ -44,16 +47,19 @@ Asteroids.InGame.prototype.create = function () {
 	this.asteroidGroup.setAll('checkWorldBounds', true);
 	this.asteroidGroup.setAll('outOfBoundsKill', true);
 
+	// create explosion group
 	this.explosionGroup = this.add.group();
 	this.explosionGroup.createMultiple(20, 'explosion');
+
+	var animationFrames = [];
+	for (var i = 1; i != 15; i++) animationFrames.push(i);
+
 	this.explosionGroup.forEach(function (explosion) {
-		explosion.animations.add('explode', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], 30, false);
+		explosion.animations.add('explode', animationFrames, 30, false);
 	}, this);
 
 	this.sfx_explosion1 = this.add.audio('sfx_explosion1');
 	
-	/*this.scoreText = this.game.add.text(this.game.world.centerX, 30, 'SCORE: ' + Asteroids.score,
-		{ font: '18pt Audiowide', fill: '#fff', align: 'center' });*/
 	this.scoreText = this.game.add.text(this.game.world.centerX, 30, 'SCORE: ' + Asteroids.score, Asteroids.fontStyle);
 	this.scoreText.anchor.setTo(0.5, 0.5);
 };
@@ -62,8 +68,6 @@ Asteroids.InGame.prototype.create = function () {
 Asteroids.InGame.prototype.update = function () {
 	// Scroll the background
 	this.bg.tilePosition.x -= 0.5;
-
-	this.scoreText.setText('SCORE: ' + Asteroids.score);
 
 	if(this.asteroidGroup.countLiving() === 0) {
 		var spawnTimer = this.time.create(true);
@@ -109,8 +113,13 @@ Asteroids.InGame.prototype.update = function () {
 
 Asteroids.InGame.prototype.spawnAsteroids = function () {
 	var ship = this.ship;
-	var xExtent = ship.width + 20;
-	var yExtent = ship.height + 20;
+	var shipX = ship.centerX;
+	var shipY = ship.centerY;
+	var minDistance = 75;
+
+	var screenPadding = 50;
+	var screenWidth = this.game.width - screenPadding;
+	var screenHeight = this.game.height - screenPadding;
 
 	while(this.asteroidGroup.countDead() !== 0) {
 		var asteroid = this.asteroidGroup.getFirstDead();
@@ -119,10 +128,10 @@ Asteroids.InGame.prototype.spawnAsteroids = function () {
 		// Find a location to spawn that isn't directly on top of the player
 		var x, y;
 		do {
-			x = Math.floor(Math.random() * 750) + 10;
-			y = Math.floor(Math.random() * 550) + 10;
+			x = this.rnd.between(screenPadding, screenWidth);
+			y = this.rnd.between(screenPadding, screenHeight);
 		}
-		while (Math.abs(ship.centerX - x) < xExtent || Math.abs(ship.centerY - y) < yExtent);
+		while (this.math.distance(x, y, shipX, shipY) < minDistance);
 
 		asteroid.reset(x, y);
 	}
@@ -138,6 +147,7 @@ Asteroids.InGame.prototype.destroyAsteroid = function (asteroid, shot) {
 	shot.kill();
 
 	Asteroids.score += 10;
+	this.scoreText.setText('SCORE: ' + Asteroids.score);
 };
 
 
