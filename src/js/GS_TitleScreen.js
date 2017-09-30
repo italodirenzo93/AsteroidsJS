@@ -13,4 +13,4 @@
 (function (Asteroids) {
 	'use strict';
 	Asteroids.TitleScreenState = {};
-}(Asteroids = Asteroids || {}));
+}(window.Asteroids = window.Asteroids || {}));

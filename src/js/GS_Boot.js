@@ -17,4 +17,4 @@
 			this.state.start('Preloader');
 		}
 	}
-}(Asteroids = Asteroids || {}));
+}(window.Asteroids = window.Asteroids || {}));

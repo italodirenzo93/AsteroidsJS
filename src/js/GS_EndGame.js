@@ -51,4 +51,4 @@
 			}
 		}
 	};
-}(Asteroids = Asteroids || {}));
+}(window.Asteroids = window.Asteroids || {}));

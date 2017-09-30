@@ -6,4 +6,4 @@
 	game.state.add('InGame', Asteroids.InGameState);
 	game.state.add('EndGame', Asteroids.EndGameState);
 	game.state.start('Boot');
-}(Asteroids = Asteroids || {}));
+}(window.Asteroids = window.Asteroids || {}));
