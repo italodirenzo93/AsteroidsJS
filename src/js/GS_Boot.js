@@ -4,16 +4,17 @@
 	Description: Boot game state.
 	Last Edit: 09/10/2015
 */
-var Asteroids = Asteroids || {};
+(function (Asteroids) {
+	'use strict';
 
-Asteroids.Boot = function (game) {};
+	Asteroids.BootState = {
+		create: function () {
+			this.load.image('preloaderBar', 'assets/img/loading-bar.png');
+		},
 
-// Methods
-Asteroids.Boot.prototype.preload = function () {
-	this.load.image('preloaderBar', 'assets/img/loading-bar.png');
-};
-
-Asteroids.Boot.prototype.create = function () {
-	this.input.maxPointers = 1;
-	this.state.start('Preloader');
-};
+		update: function () {
+			this.input.maxPointers = 1;
+			this.state.start('Preloader');
+		}
+	}
+}(Asteroids = Asteroids || {}));

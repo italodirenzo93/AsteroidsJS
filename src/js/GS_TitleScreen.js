@@ -10,7 +10,7 @@
 	- create title screen graphic
 	
 */
-var Asteroids = Asteroids || {};
-
-Asteroids.TitleScreen = function (game) {};
-Asteroids.TitleScreen.prototype = {};
+(function (Asteroids) {
+	'use strict';
+	Asteroids.TitleScreenState = {};
+}(Asteroids = Asteroids || {}));
