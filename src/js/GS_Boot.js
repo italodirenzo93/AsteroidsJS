@@ -16,5 +16,5 @@
 			this.input.maxPointers = 1;
 			this.state.start('Preloader');
 		}
-	}
+	};
 }(window.Asteroids = window.Asteroids || {}));
