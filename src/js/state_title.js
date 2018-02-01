@@ -1,5 +1,5 @@
 /*
-	Title: GS_TitleScreen.js
+	Title: state_title.js
 	Author: Italo Di Renzo
 	Description: TitleScreen game state.
 	Last Edit: 09/10/2015

@@ -1,5 +1,5 @@
 /*
-	Title: GS_EndGame.js
+	Title: state_end.js
 	Author: Italo Di Renzo
 	Description: Ending game state.
 	Last Edit: 09/28/2017

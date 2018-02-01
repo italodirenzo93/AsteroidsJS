@@ -1,5 +1,5 @@
 /*
-	Title: GS_Boot.js
+	Title: state_boot.js
 	Author: Italo Di Renzo
 	Description: Boot game state.
 	Last Edit: 09/10/2015
