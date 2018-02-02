@@ -8,12 +8,15 @@
 	'use strict';
 
 	Asteroids.BootState = {
-		create: function () {
+		init: function () {
+			this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;	// Maintain aspect ratio
+		},
+
+		preload: function () {
 			this.load.image('preloaderBar', 'assets/img/loading-bar.png');
 		},
 
 		update: function () {
-			this.input.maxPointers = 1;
 			this.state.start('Preloader');
 		}
 	};

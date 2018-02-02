@@ -1,5 +1,5 @@
 /*
-	Title: GS_InGame.js
+	Title: state_play.js
 	Author: Italo Di Renzo
 	Description: Playing game state.
 	Last Edit: 09/29/2017
@@ -10,117 +10,131 @@
 	Asteroids.score = 0;
 
 	// Variables
+	var game;
 	var fontStyle = { font: '18pt Audiowide', fill: '#fff', align: 'center' };
 	var shotTimer = 0, shotDelay = 190, shotSpeed = 550;
 	var waveIncoming = false;
 
+	// Game objects
+	var ship, background, scoreText;
+
+	// Groups
+	var asteroids, explosions, lasers;
+
+	// Sounds
+	var sfx_laser1, sfx_explosion1;
+
 	// Define game state
 	Asteroids.InGameState = {
+		init: function () {
+			game = this.game;
+			game.input.maxPointers = 1;
+		},
+
 		create: function () {
 			// Start physics system
-			this.physics.startSystem(Phaser.Physics.ARCADE);
+			game.physics.startSystem(Phaser.Physics.ARCADE);
 		
 			// Insert and initialize assets
-			this.bg = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'space');
+			background = game.add.tileSprite(0, 0, game.width, game.height, 'space');
 		
 			// create ship
-			this.ship = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'ship', 0);
-			this.ship.anchor.setTo(0.5, 0.5);
-			this.physics.arcade.enable(this.ship);
-			this.ship.animations.add('fly', [0, 1], 10, true);
-			this.ship.animations.play('fly');
+			ship = game.add.sprite(game.world.centerX, game.world.centerY, 'ship', 0);
+			ship.anchor.setTo(0.5, 0.5);
+			game.physics.arcade.enable(ship);
+			ship.animations.add('fly', [0, 1], 10, true);
+			ship.animations.play('fly');
 			
 			// create laser group
-			this.lasers = this.game.add.group();
-			this.lasers.enableBody = true;
-			this.lasers.physicsBodyType = Phaser.Physics.ARCADE;
-			this.lasers.createMultiple(10, 'lasers');
-			this.lasers.setAll('checkWorldBounds', true);
-			this.lasers.setAll('outOfBoundsKill', true);
+			lasers = game.add.group();
+			lasers.enableBody = true;
+			lasers.physicsBodyType = Phaser.Physics.ARCADE;
+			lasers.createMultiple(10, 'lasers');
+			lasers.setAll('checkWorldBounds', true);
+			lasers.setAll('outOfBoundsKill', true);
 		
-			this.sfx_laser1 = this.add.audio('sfx_laser1', 0.5);
+			sfx_laser1 = game.add.audio('sfx_laser1', 0.5);
 		
 			// create asteroid group
-			this.asteroidGroup = this.add.group();
-			this.asteroidGroup.enableBody = true;
-			this.asteroidGroup.physicsBodyType = Phaser.Physics.ARCADE;
-			this.asteroidGroup.createMultiple(20, 'asteroid');
-			this.asteroidGroup.setAll('checkWorldBounds', true);
-			this.asteroidGroup.setAll('outOfBoundsKill', true);
+			asteroids = game.add.group();
+			asteroids.enableBody = true;
+			asteroids.physicsBodyType = Phaser.Physics.ARCADE;
+			asteroids.createMultiple(20, 'asteroid');
+			asteroids.setAll('checkWorldBounds', true);
+			asteroids.setAll('outOfBoundsKill', true);
 		
 			// create explosion group
-			this.explosionGroup = this.add.group();
-			this.explosionGroup.createMultiple(20, 'explosion');
+			explosions = game.add.group();
+			explosions.createMultiple(20, 'explosion');
 		
 			var animationFrames = [];
 			for (var i = 1; i != 15; i++) animationFrames.push(i);
 		
-			this.explosionGroup.forEach(function (explosion) {
+			explosions.forEach(function (explosion) {
 				explosion.animations.add('explode', animationFrames, 30, false);
 			}, this);
 		
-			this.sfx_explosion1 = this.add.audio('sfx_explosion1');
+			sfx_explosion1 = game.add.audio('sfx_explosion1');
 			
-			this.scoreText = this.game.add.text(this.game.world.centerX, 30, 'SCORE: ' + Asteroids.score, Asteroids.fontStyle);
-			this.scoreText.anchor.setTo(0.5, 0.5);
+			scoreText = game.add.text(game.world.centerX, 30, 'SCORE: ' + Asteroids.score, Asteroids.fontStyle);
+			scoreText.anchor.setTo(0.5, 0.5);
 		},
 
 		update: function () {
 			// Scroll the background
-			this.bg.tilePosition.x -= 0.5;
+			background.tilePosition.x -= 0.5;
 		
-			if(!waveIncoming && this.asteroidGroup.countLiving() == 0) {
-				this.time.events.add(Phaser.Timer.SECOND * 5, spawnAsteroids, this);
+			if(!waveIncoming && asteroids.countLiving() == 0) {
+				game.time.events.add(Phaser.Timer.SECOND * 5, spawnAsteroids, this);
 				waveIncoming = true;
 			}
 		
 			// Adjust ship's speed relative to its distance from the mouse cursor
-			var shipSpeed = Phaser.Point.distance(this.ship, this.input.activePointer, true);
-			this.physics.arcade.moveToPointer(this.ship, shipSpeed);
+			var shipSpeed = Phaser.Point.distance(ship, game.input.activePointer, true);
+			game.physics.arcade.moveToPointer(ship, shipSpeed);
 		
 			// Rotate the ship toward the mouse cursor
-			var targetAngle = (360 / (2 * Math.PI)) * this.game.math.angleBetween(
-					this.ship.x, this.ship.y,
-					this.game.input.x,
-					this.game.input.y) + 90;
-				this.ship.body.rotation = targetAngle;
+			var targetAngle = (360 / (2 * Math.PI)) * game.math.angleBetween(
+					ship.x, ship.y,
+					game.input.x,
+					game.input.y) + 90;
+				ship.body.rotation = targetAngle;
 		
 			// If the ship reaches the mouse cursor, stop moving
-			if(Phaser.Rectangle.contains(this.ship.body, this.game.input.x, this.game.input.y)) {
-				this.ship.body.velocity.setTo(0, 0);
+			if(Phaser.Rectangle.contains(ship.body, game.input.x, game.input.y)) {
+				ship.body.velocity.setTo(0, 0);
 			}
 		
 			// On left-mouse button down, activate the the "lasers". Muahahahaha!!!
-			if(this.input.activePointer.isDown) {
-				if(shotTimer < this.time.now) {
-					shotTimer = this.time.now + shotDelay;
+			if(game.input.activePointer.isDown) {
+				if(shotTimer < game.time.now) {
+					shotTimer = game.time.now + shotDelay;
 		
-					var shot = this.lasers.getFirstDead();
-					shot.reset(this.ship.x, this.ship.y);
-					shot.rotation = this.ship.rotation;	// this is a problem
+					var shot = lasers.getFirstDead();
+					shot.reset(ship.x, ship.y);
+					shot.rotation = ship.rotation;	// this is a problem
 					shot.anchor.setTo(0.5, 2); 
-					this.physics.arcade.moveToPointer(shot, shotSpeed);
-					this.sfx_laser1.play();
+					game.physics.arcade.moveToPointer(shot, shotSpeed);
+					sfx_laser1.play();
 				}
 			}
 		
 			// Collision masks
-			this.physics.arcade.collide(this.asteroidGroup);
-			this.physics.arcade.overlap(this.ship, this.asteroidGroup, function (asteroid, ship) { this.state.start('EndGame') }, null, this);
-			this.physics.arcade.overlap(this.asteroidGroup, this.lasers, destroyAsteroid, null, this);
+			game.physics.arcade.collide(asteroids);
+			game.physics.arcade.overlap(ship, asteroids, function (asteroid, ship) { game.state.start('EndGame') }, null, this);
+			game.physics.arcade.overlap(asteroids, lasers, destroyAsteroid, null, this);
 		},
 
 		render: function () {
 			// debug stuff
-			this.game.debug.text('Asteroids Living: ' + this.asteroidGroup.countLiving(), 30, 40);
-			this.game.debug.text('Asteroids Dead: ' + this.asteroidGroup.countDead(), 30, 60);
-			this.game.debug.text('Explosions Living: ' + this.explosionGroup.countLiving(), 30, 80);
-			this.game.debug.text('Explosions Dead: ' + this.explosionGroup.countDead(), 30, 100);
+			game.debug.text('Asteroids Living: ' + asteroids.countLiving(), 30, 40);
+			game.debug.text('Asteroids Dead: ' + asteroids.countDead(), 30, 60);
+			game.debug.text('Explosions Living: ' + asteroids.countLiving(), 30, 80);
+			game.debug.text('Explosions Dead: ' + asteroids.countDead(), 30, 100);
 		}
 	};
 
 	function spawnAsteroids() {
-		var ship = this.ship;
 		var shipX = ship.centerX;
 		var shipY = ship.centerY;
 		var minDistance = 75;
@@ -129,17 +143,17 @@
 		var screenWidth = this.game.width - screenPadding;
 		var screenHeight = this.game.height - screenPadding;
 	
-		while(this.asteroidGroup.countDead() !== 0) {
-			var asteroid = this.asteroidGroup.getFirstDead();
+		while(asteroids.countDead() != 0) {
+			var asteroid = asteroids.getFirstDead();
 			asteroid.body.setSize(30, 30);
 	
 			// Find a location to spawn that isn't directly on top of the player
 			var x, y;
 			do {
-				x = this.rnd.between(screenPadding, screenWidth);
-				y = this.rnd.between(screenPadding, screenHeight);
+				x = game.rnd.between(screenPadding, screenWidth);
+				y = game.rnd.between(screenPadding, screenHeight);
 			}
-			while (this.math.distance(x, y, shipX, shipY) < minDistance);
+			while (game.math.distance(x, y, shipX, shipY) < minDistance);
 	
 			asteroid.reset(x, y);
 		}
@@ -148,16 +162,16 @@
 	}
 
 	function destroyAsteroid(asteroid, shot) {
-		var explosion = this.explosionGroup.getFirstDead();
+		var explosion = explosions.getFirstDead();
 		explosion.reset(asteroid.x, asteroid.y);
 		explosion.animations.play('explode', null, false, true);
-		this.sfx_explosion1.play();
+		sfx_explosion1.play();
 	
 		asteroid.kill();
 		shot.kill();
 	
 		Asteroids.score += 10;
-		this.scoreText.setText('SCORE: ' + Asteroids.score);
+		scoreText.setText('SCORE: ' + Asteroids.score);
 	}
 
 }(window.Asteroids = window.Asteroids || {}));
